@@ -7,7 +7,7 @@ class Repo(object):
 
 def _shell(command, debug=True):
     if debug:
-        print(command)
+        click.echo(command)
         to_cont = input('Continue? [y/n]')
         if to_cont != 'y':
             return
@@ -46,19 +46,29 @@ def checkin(message, name):
         _shell('git tag -a ' + name + ' -m "' + message + '"')
 
 @main.command()
+@click.argument('file_names', nargs=-1)
 def checkout(file_names):
     """Revert each file in the list file_names back to version in repo"""
-    pass
+    if len(file_names) == 0:
+        click.echo('No file names to checkout specified.')
+        click.echo('The following have changed since the last check in.')
+        _shell('git status')
+    for fn in file_names:
+        _shell('git checkout -- ' + fn)
 
 @main.command()
-def upload():
+@click.option('--tags', is_flag=True, default=False)
+def upload(tags):
     """Synchronise local repo to remote repo"""
-    _shell('git push origin --tags')
+    if tags:
+        _shell('git push --tags')
+    else:
+        _shell('git push')
 
 @main.command()
 def download():
     """Synchronise remote repo to local repo"""
-    pass
+    _shell('git pull')
 
 @main.command()
 def status():
@@ -72,9 +82,10 @@ def log():
     _shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
 
 @main.command()
+@click.argument('file_name', default='')
 def diff(file_name):
     """See changes that occured since last check in"""
-    pass
+    _shell('git diff --color-words --ignore-space-change ' + file_name)
 
 main.add_command(init)
 main.add_command(track)
