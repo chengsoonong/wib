@@ -18,7 +18,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
-    install_requires=dependencies,
+    install_requires=['click'],
     entry_points={
         'console_scripts': [
             'dvdt = dvdt.cli:main',
