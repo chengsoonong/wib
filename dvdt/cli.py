@@ -17,27 +17,35 @@ class Repo(object):
 
 @click.group()
 @click.pass_context
-@click.option('--debug', is_flag=True, default=True)
+@click.option('--debug', is_flag=True, default=False)
 def main(context, debug):
     context.obj = Repo(debug)
 
 @main.command()
+@click.argument('repo_name')
 @click.pass_context
-def init(context):
+def init(context, repo_name):
     """Start a new repository"""
-    pass
+    context.obj.shell('git init ' + repo_name)
 
 @main.command()
+@click.argument('file_names', nargs=-1)
 @click.pass_context
 def track(context, file_names):
-    """Keep track of each file in list file_names"""
-    pass
+    """Keep track of each file in list file_names.
+
+    TODO: git ls-tree -r HEAD --name-only
+    """
+    for fn in file_names:
+        context.obj.shell('git add ' + fn)
 
 @main.command()
+@click.argument('file_names', nargs=-1)
 @click.pass_context
 def untrack(context, file_names):
     """Forget about tracking each file in the list file_names"""
-    pass
+    for fn in file_names:
+        context.obj.shell('git rm --cached ' + fn)
 
 @main.command()
 @click.argument('message')
