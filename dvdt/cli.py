@@ -68,7 +68,8 @@ def status():
 @main.command()
 def log():
     """See history"""
-    pass
+    format = "'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
+    _shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
 
 @main.command()
 def diff(file_name):
