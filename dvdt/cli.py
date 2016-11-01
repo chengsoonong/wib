@@ -9,9 +9,7 @@ class Repo(object):
     def shell(self, command):
         if self.debug:
             click.echo(command)
-            to_cont = input('Continue? [y/n]')
-            if to_cont != 'y':
-                return
+            click.confirm('Continue?', default=True, abort=True)
         subprocess.call(command, shell=True)
 
 
@@ -61,6 +59,14 @@ def checkin(context, message, name):
         context.obj.shell('git tag -a ' + name + ' -m "' + message + '"')
 
 @main.command()
+@click.argument('message')
+@click.option('--name', default='')
+@click.pass_context
+def ci(context, message, name):
+    """alias for checkin"""
+    context.forward(checkin)
+
+@main.command()
 @click.argument('file_names', nargs=-1)
 @click.pass_context
 def checkout(context, file_names):
@@ -68,9 +74,16 @@ def checkout(context, file_names):
     if len(file_names) == 0:
         click.echo('No file names to checkout specified.')
         click.echo('The following have changed since the last check in.')
-        context.obj.shell('git status')
+        context.invoke(status)
     for fn in file_names:
         context.obj.shell('git checkout -- ' + fn)
+
+@main.command()
+@click.argument('file_names', nargs=-1)
+@click.pass_context
+def co(context, file_names):
+    """"alias for checkout"""
+    context.forward(checkout)
 
 @main.command()
 @click.option('--tags', is_flag=True, default=False)
@@ -83,10 +96,23 @@ def upload(context, tags):
         context.obj.shell('git push')
 
 @main.command()
+@click.option('--tags', is_flag=True, default=False)
+@click.pass_context
+def up(context, tags):
+    """alias for upload"""
+    context.forward(upload)
+
+@main.command()
 @click.pass_context
 def download(context):
     """Synchronise remote repo to local repo"""
     context.obj.shell('git pull')
+
+@main.command()
+@click.pass_context
+def down(context):
+    """alias for download"""
+    context.forward(download)
 
 @main.command()
 @click.pass_context
