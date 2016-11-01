@@ -5,6 +5,14 @@ class Repo(object):
     def __init__(self, vc_name='git'):
         self.vc_name = vc_name
 
+def _shell(command, debug=True):
+    if debug:
+        print(command)
+        to_cont = input('Continue? [y/n]')
+        if to_cont != 'y':
+            return
+    subprocess.call(command, shell=True)
+
 @click.group()
 @click.pass_context
 def main(context):
@@ -26,11 +34,16 @@ def untrack(file_names):
     pass
 
 @main.command()
-def checkin(message, tag=None):
+@click.argument('message')
+@click.option('--name', default='')
+def checkin(message, name):
     """Commit saved changes to the repository.
     message - commit message
+    name    - tag name
     """
-    pass
+    _shell('git commit -a -m "' + message + '"')
+    if name != '':
+        _shell('git tag -a ' + name + ' -m "' + message + '"')
 
 @main.command()
 def checkout(file_names):
@@ -40,7 +53,7 @@ def checkout(file_names):
 @main.command()
 def upload():
     """Synchronise local repo to remote repo"""
-    pass
+    _shell('git push origin --tags')
 
 @main.command()
 def download():
@@ -50,7 +63,7 @@ def download():
 @main.command()
 def status():
     """See which files have changed, checked in, and uploaded"""
-    subprocess.call('git status', shell=True)
+    _shell('git status')
 
 @main.command()
 def log():
