@@ -1,18 +1,22 @@
 # dvdt
 A common interface to both ```git``` and ```hg```.
 
-We propose interface to version control below.
+## Installation
+
+    $ pip install .
+
+## Commands
+
 The idea would be to have a unified interface to two currently popular distributed version control
 systems (and suggest sensible defaults).
 Furthermore, automated (and transparent) detection and handling of binary files
 will simplify the user experience.
-This package is just a wrapper on top of:
-* ```git```
-* ```hg```
-* ```git lfs```
-* Mercurial large files extension
 
-## Commands
+To use it:
+
+    $ dvdt --help
+
+Summary of commands
 
 * **init** - Start a new repository. For copying from a remote repository, use **download**.
 
@@ -53,6 +57,12 @@ This package is just a wrapper on top of:
   ```dvdt diff myfile```
 
 ### References
+This package is just a wrapper on top of:
+* ```git```
+* ```hg```
+* ```git lfs```
+* Mercurial large files extension
+
 The unified interface is motivated by:
 * [gitless.com](gitless.com), and paper by Santiago Perez De Rosso and Daniel Jackson, Purposes, Concepts, Misfits, and a Redesign of Git, OOPSLA, 2016
 * [repo](http://source.android.com/source/using-repo.html)
