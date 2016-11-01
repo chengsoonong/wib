@@ -18,11 +18,10 @@ To use it:
 
 Summary of commands
 
-* **init** - Start a new repository. For copying from a remote repository, use **download**.
+* **init** - Start a new repository (defaults to git).
+  For copying from a remote repository, use **download**.
 
-  ```dvdt init --git myrepo```
-
-  ```dvdt init --hg myrepo```
+  ```dvdt init myrepo```
 
 * **track/untrack** - Keep track of this file / Forget about tracking this file.
 
@@ -51,6 +50,10 @@ Summary of commands
 * **status** - See which files are changed, checked in, and uploaded.
 
   ```dvdt status```
+
+* **log** - See history
+
+  ```dvdt log```
 
 * **diff** - See changes that occurred since last check in.
 
