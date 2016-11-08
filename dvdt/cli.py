@@ -103,14 +103,23 @@ def up(context, tags):
     context.forward(upload)
 
 @main.command()
+@click.argument('repo_url', nargs=1)
 @click.pass_context
-def download(context):
-    """Synchronise remote repo to local repo"""
-    context.obj.shell('git pull')
+def download(context, repo_url):
+    """Synchronise remote repo to local repo.
+
+    If repo_url is given, then clone from remote URL.
+    """
+    if len(repo_url) == 0:
+        context.obj.shell('git pull')
+    else:
+        context.obj.shell('git clone ' + repo_url)
+
 
 @main.command()
+@click.argument('repo_url', nargs=1)
 @click.pass_context
-def down(context):
+def down(context, repo_url):
     """alias for download"""
     context.forward(download)
 
