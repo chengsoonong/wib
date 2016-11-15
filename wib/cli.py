@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import click
 
 class Repo(object):
@@ -10,7 +11,12 @@ class Repo(object):
         if self.debug:
             click.echo(command)
             click.confirm('Continue?', default=True, abort=True)
-        subprocess.call(command, shell=True)
+        try:
+            ret_code = subprocess.call(command, shell=True)
+        except subprocess.CalledProcessError:
+            return False
+        return ret_code
+
 
 
 @click.group()
@@ -18,6 +24,19 @@ class Repo(object):
 @click.option('--debug', is_flag=True, default=False)
 def main(context, debug):
     context.obj = Repo(debug)
+    is_git = context.obj.shell('git rev-parse --is-inside-work-tree')
+    if is_git != 0:
+        print('not git')
+        is_hg = context.obj.shell('hg -q stat 2> /dev/null > /dev/null')
+        if is_hg != 0:
+            print('not hg')
+            exit(1)
+        else:
+            print('Found hg repo')
+            context.obj.vc_name = 'hg'
+            sys.tracebacklimit = None
+            raise NotImplementedError('Mercurial support not yet implemented')
+
 
 @main.command()
 @click.argument('repo_name')
