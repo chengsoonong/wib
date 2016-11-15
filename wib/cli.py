@@ -32,10 +32,7 @@ def main(context, debug):
             print('not hg')
             exit(1)
         else:
-            print('Found hg repo')
             context.obj.vc_name = 'hg'
-            sys.tracebacklimit = None
-            raise NotImplementedError('Mercurial support not yet implemented')
 
 
 @main.command()
@@ -43,18 +40,15 @@ def main(context, debug):
 @click.pass_context
 def init(context, repo_name):
     """Start a new repository"""
-    context.obj.shell('git init ' + repo_name)
+    context.obj.shell(context.obj.vc_name + ' init ' + repo_name)
 
 @main.command()
 @click.argument('file_names', nargs=-1)
 @click.pass_context
 def track(context, file_names):
-    """Keep track of each file in list file_names.
-
-    TODO: git ls-tree -r HEAD --name-only
-    """
+    """Keep track of each file in list file_names."""
     for fn in file_names:
-        context.obj.shell('git add ' + fn)
+        context.obj.shell(context.obj.vc_name + ' add ' + fn)
 
 @main.command()
 @click.argument('file_names', nargs=-1)
@@ -62,7 +56,10 @@ def track(context, file_names):
 def untrack(context, file_names):
     """Forget about tracking each file in the list file_names"""
     for fn in file_names:
-        context.obj.shell('git rm --cached ' + fn)
+        if context.obj.vc_name == 'git':
+            context.obj.shell('git rm --cached ' + fn)
+        elif context.obj.vc_name == 'hg':
+            context.obj.shell('hg forget ' + fn)
 
 @main.command()
 @click.argument('message')
@@ -73,9 +70,14 @@ def checkin(context, message, name):
     message - commit message
     name    - tag name
     """
-    context.obj.shell('git commit -a -m "' + message + '"')
-    if name != '':
+    if context.obj.vc_name == 'git':
+        context.obj.shell('git commit -a -m "' + message + '"')
+    elif context.obj.vc_name == 'hg':
+        context.obj.shell('hg commit -m "' + message '"')
+    if name != '' and context.obj.vc_name == 'git':
         context.obj.shell('git tag -a ' + name + ' -m "' + message + '"')
+    elif name != '' and context.obj.vc_name == 'hg':
+        context.obj.shell('hg tag -m "' + message + '" ' + name)
 
 @main.command()
 @click.argument('message')
@@ -95,7 +97,10 @@ def checkout(context, file_names):
         click.echo('The following have changed since the last check in.')
         context.invoke(status)
     for fn in file_names:
-        context.obj.shell('git checkout -- ' + fn)
+        if context.obj.vc_name == 'git':
+            context.obj.shell('git checkout -- ' + fn)
+        elif context.obj.vc_name == 'hg':
+            context.obj.shell('hg revert --no-backup ' + fn)
 
 @main.command()
 @click.argument('file_names', nargs=-1)
@@ -105,14 +110,14 @@ def co(context, file_names):
     context.forward(checkout)
 
 @main.command()
-@click.option('--tags', is_flag=True, default=False)
 @click.pass_context
-def upload(context, tags):
+def upload(context):
     """Synchronise local repo to remote repo"""
-    if tags:
-        context.obj.shell('git push --tags')
-    else:
+    if context.obj.vc_name == 'git':
         context.obj.shell('git push')
+        context.obj.shell('git push --tags')
+    elif context.obj.vc_name == 'hg':
+        context.obj.shell('hg push')
 
 @main.command()
 @click.option('--tags', is_flag=True, default=False)
@@ -130,9 +135,12 @@ def download(context, repo_url):
     If repo_url is given, then clone from remote URL.
     """
     if repo_url == '':
-        context.obj.shell('git pull')
+        if context.obj.vc_name == 'git':
+            context.obj.shell('git pull')
+        elif context.obj.vc_name == 'hg':
+            context.obj.shell('hg pull -u')
     else:
-        context.obj.shell('git clone ' + repo_url)
+        context.obj.shell(context.obj.vc_name + ' clone ' + repo_url)
 
 
 @main.command()
@@ -146,21 +154,27 @@ def down(context, repo_url):
 @click.pass_context
 def status(context):
     """See which files have changed, checked in, and uploaded"""
-    context.obj.shell('git status')
+    context.obj.shell(context.obj.vc_name + ' status')
 
 @main.command()
 @click.pass_context
 def log(context):
     """See history"""
-    format = "'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
-    context.obj.shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
+    if context.obj.vc_name == 'git':
+        format = "'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
+        context.obj.shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
+    elif context.obj.vc_name == 'hg':
+        context.obj.shell('hg log -G --template changeset:   {rev}:{node|short} {tags}\nsummary:     {desc|firstline|fill68|tabindent|tabindent}')
 
 @main.command()
 @click.argument('file_name', default='')
 @click.pass_context
 def diff(context, file_name):
     """See changes that occured since last check in"""
-    context.obj.shell('git diff --color-words --ignore-space-change ' + file_name)
+    if context.obj.vc_name == 'git':
+        context.obj.shell('git diff --color-words --ignore-space-change ' + file_name)
+    elif context.obj.vc_name == 'hg':
+        context.obj.shell('hg diff ' + file_name)
 
 main.add_command(init)
 main.add_command(track)
