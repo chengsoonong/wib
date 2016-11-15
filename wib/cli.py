@@ -73,7 +73,7 @@ def checkin(context, message, name):
     if context.obj.vc_name == 'git':
         context.obj.shell('git commit -a -m "' + message + '"')
     elif context.obj.vc_name == 'hg':
-        context.obj.shell('hg commit -m "' + message '"')
+        context.obj.shell('hg commit -m "' + message + '"')
     if name != '' and context.obj.vc_name == 'git':
         context.obj.shell('git tag -a ' + name + ' -m "' + message + '"')
     elif name != '' and context.obj.vc_name == 'hg':
@@ -120,9 +120,8 @@ def upload(context):
         context.obj.shell('hg push')
 
 @main.command()
-@click.option('--tags', is_flag=True, default=False)
 @click.pass_context
-def up(context, tags):
+def up(context):
     """alias for upload"""
     context.forward(upload)
 
