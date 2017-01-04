@@ -24,12 +24,14 @@ class Repo(object):
 @click.option('--debug', is_flag=True, default=False)
 def main(context, debug):
     context.obj = Repo(debug)
-    is_git = context.obj.shell('git rev-parse --is-inside-work-tree')
+    is_git = context.obj.shell('git rev-parse --is-inside-work-tree &> /dev/null')
     if is_git != 0:
-        print('not git')
-        is_hg = context.obj.shell('hg -q stat 2> /dev/null > /dev/null')
+        if debug:
+            print('not git')
+        is_hg = context.obj.shell('hg -q stat &> /dev/null')
         if is_hg != 0:
-            print('not hg')
+            if debug:
+                print('not hg')
             exit(1)
         else:
             context.obj.vc_name = 'hg'
