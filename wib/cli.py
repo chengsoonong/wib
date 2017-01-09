@@ -17,25 +17,27 @@ class Repo(object):
             return False
         return ret_code
 
+    def find_repo_type(self):
+        """Check for git or hg repository"""
+        is_git = self.shell('git rev-parse --is-inside-work-tree &> /dev/null')
+        if is_git != 0:
+            if self.debug:
+                click.echo('not git')
+            is_hg = self.shell('hg -q stat &> /dev/null')
+            if is_hg != 0:
+                if self.debug:
+                    click.echo('not hg')
+                exit(1)
+            else:
+                self.vc_name = 'hg'
 
 
 @click.group()
 @click.pass_context
 @click.option('--debug', is_flag=True, default=False)
+@click.version_option()
 def main(context, debug):
     context.obj = Repo(debug)
-    is_git = context.obj.shell('git rev-parse --is-inside-work-tree &> /dev/null')
-    if is_git != 0:
-        if debug:
-            print('not git')
-        is_hg = context.obj.shell('hg -q stat &> /dev/null')
-        if is_hg != 0:
-            if debug:
-                print('not hg')
-            exit(1)
-        else:
-            context.obj.vc_name = 'hg'
-
 
 @main.command()
 @click.argument('repo_name')
@@ -49,6 +51,7 @@ def init(context, repo_name):
 @click.pass_context
 def track(context, file_names):
     """Keep track of each file in list file_names."""
+    context.obj.find_repo_type()
     for fn in file_names:
         context.obj.shell(context.obj.vc_name + ' add ' + fn)
 
@@ -57,6 +60,7 @@ def track(context, file_names):
 @click.pass_context
 def untrack(context, file_names):
     """Forget about tracking each file in the list file_names"""
+    context.obj.find_repo_type()
     for fn in file_names:
         if context.obj.vc_name == 'git':
             context.obj.shell('git rm --cached ' + fn)
@@ -72,6 +76,7 @@ def checkin(context, message, name):
     message - commit message
     name    - tag name
     """
+    context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
         context.obj.shell('git commit -a -m "' + message + '"')
     elif context.obj.vc_name == 'hg':
@@ -94,6 +99,7 @@ def ci(context, message, name):
 @click.pass_context
 def checkout(context, file_names):
     """Revert each file in the list file_names back to version in repo"""
+    context.obj.find_repo_type()
     if len(file_names) == 0:
         click.echo('No file names to checkout specified.')
         click.echo('The following have changed since the last check in.')
@@ -115,6 +121,7 @@ def co(context, file_names):
 @click.pass_context
 def upload(context):
     """Synchronise local repo to remote repo"""
+    context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
         context.obj.shell('git push')
         context.obj.shell('git push --tags')
@@ -136,6 +143,7 @@ def download(context, repo_url):
     If repo_url is given, then clone from remote URL.
     """
     if repo_url == '':
+        context.obj.find_repo_type()
         if context.obj.vc_name == 'git':
             context.obj.shell('git pull')
         elif context.obj.vc_name == 'hg':
@@ -155,12 +163,14 @@ def down(context, repo_url):
 @click.pass_context
 def status(context):
     """See which files have changed, checked in, and uploaded"""
+    context.obj.find_repo_type()
     context.obj.shell(context.obj.vc_name + ' status')
 
 @main.command()
 @click.pass_context
 def log(context):
     """See history"""
+    context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
         format = "'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
         context.obj.shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
@@ -172,6 +182,7 @@ def log(context):
 @click.pass_context
 def diff(context, file_name):
     """See changes that occured since last check in"""
+    context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
         context.obj.shell('git diff --color-words --ignore-space-change ' + file_name)
     elif context.obj.vc_name == 'hg':
