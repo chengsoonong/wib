@@ -7,7 +7,7 @@ dependencies = ['click']
 
 setup(
     name='wib',
-    version='0.2.0',
+    version='0.2.1',
     url='https://github.com/chengsoonong/wib',
     license='BSD',
     author='Cheng Soon Ong',

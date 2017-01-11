@@ -40,13 +40,6 @@ def main(context, debug):
     context.obj = Repo(debug)
 
 @main.command()
-@click.argument('repo_name')
-@click.pass_context
-def init(context, repo_name):
-    """Start a new repository"""
-    context.obj.shell(context.obj.vc_name + ' init ' + repo_name)
-
-@main.command()
 @click.argument('file_names', nargs=-1)
 @click.pass_context
 def track(context, file_names):
@@ -188,7 +181,6 @@ def diff(context, file_name):
     elif context.obj.vc_name == 'hg':
         context.obj.shell('hg diff ' + file_name)
 
-main.add_command(init)
 main.add_command(track)
 main.add_command(untrack)
 main.add_command(checkin)

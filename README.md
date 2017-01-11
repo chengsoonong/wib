@@ -9,21 +9,29 @@ About the name [wib](https://en.wikipedia.org/wiki/Worse_is_better)
 
 ## Commands
 
-The idea would be to have a unified interface to two currently popular distributed version control
-systems (and suggest sensible defaults).
-Furthermore, automated (and transparent) detection and handling of binary files
+The idea is to have a unified interface to two currently popular distributed version control
+systems (and suggest sensible defaults). The aim is to have a small set of commands that
+cover the use cases for users who do not use version control extensively, with a set of
+semantically meaningful commands.
+
+**Everybody should be using version control regularly!**
+
+Longer term, automated (and transparent) detection and handling of binary files
 will simplify the user experience.
 
-To use it:
+To learn how to use it:
 
     $ wib --help
 
 Summary of commands
 
-* **init** - Start a new repository (defaults to git).
-  For copying from a remote repository, use **download**.
+* **upload/download** - Synchronise local repository to remote repository (and vice versa)
 
-  ```wib init myrepo```
+  ```wib upload```
+
+  ```wib download```
+
+  ```wib download git@github.com:myname/myrepo.git```
 
 * **track/untrack** - Keep track of this file / Forget about tracking this file.
 
@@ -41,14 +49,6 @@ Summary of commands
 
   ```wib checkout myfile```
 
-* **upload/download** - Synchronise local repository to remote repository (and vice versa)
-
-  ```wib upload```
-
-  ```wib download```
-
-  ```wib download git@github.com:myname/myrepo.git```
-
 * **status** - See which files are changed, checked in, and uploaded.
 
   ```wib status```
@@ -61,10 +61,21 @@ Summary of commands
 
   ```wib diff myfile```
 
+### Starting a new project/repository
+
+We suggest to initialise a repository on a remote server, for example
+[github](https://github.com/), [bitbucket](https://bitbucket.org) or
+[gitlab](https://about.gitlab.com).
+Then copy the URL of the repository (not the website) from the server and use **download**.
+
+For example, to get a local copy of this repository
+
+    $ wib download git@github.com:chengsoonong/wib.git
+    
 ### References
 This package is just a wrapper on top of:
 * ```git```
-* ```hg```  (TODO)
+* ```hg```
 * ```git lfs```  (TODO)
 * Mercurial large files extension  (TODO)
 
