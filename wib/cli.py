@@ -64,7 +64,7 @@ def untrack(context, file_names):
 @click.argument('message')
 @click.option('--name', default='')
 @click.pass_context
-def checkin(context, message, name):
+def commit(context, message, name):
     """Commit saved changes to the repository.
     message - commit message
     name    - tag name
@@ -84,13 +84,13 @@ def checkin(context, message, name):
 @click.option('--name', default='')
 @click.pass_context
 def ci(context, message, name):
-    """alias for checkin"""
-    context.forward(checkin)
+    """alias for commit"""
+    context.forward(commit)
 
 @main.command()
 @click.argument('file_names', nargs=-1)
 @click.pass_context
-def checkout(context, file_names):
+def revert(context, file_names):
     """Revert each file in the list file_names back to version in repo"""
     context.obj.find_repo_type()
     if len(file_names) == 0:
@@ -102,13 +102,6 @@ def checkout(context, file_names):
             context.obj.shell('git checkout -- ' + fn)
         elif context.obj.vc_name == 'hg':
             context.obj.shell('hg revert --no-backup ' + fn)
-
-@main.command()
-@click.argument('file_names', nargs=-1)
-@click.pass_context
-def co(context, file_names):
-    """"alias for checkout"""
-    context.forward(checkout)
 
 @main.command()
 @click.pass_context
@@ -183,8 +176,8 @@ def diff(context, file_name):
 
 main.add_command(track)
 main.add_command(untrack)
-main.add_command(checkin)
-main.add_command(checkout)
+main.add_command(commit)
+main.add_command(revert)
 main.add_command(upload)
 main.add_command(download)
 main.add_command(status)

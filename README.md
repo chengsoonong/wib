@@ -39,15 +39,15 @@ Summary of commands
 
   ```wib untrack myfile```
 
-* **checkin** - Commit saved changes to the repository. Use ```--name``` to tag.
+* **commit** - Commit saved changes to the repository. Use ```--name``` to tag.
 
-  ```wib checkin "why I am saving this version"```
+  ```wib commit "why I am saving this version"```
 
-  ```wib checkin --name v0.3 "a release with cool new features"```
+  ```wib commit --name v0.3 "a release with cool new features"```
 
-* **checkout** - Revert changed files back to the version in the repository
+* **revert** - Revert changed files back to the version in the repository
 
-  ```wib checkout myfile```
+  ```wib revert myfile```
 
 * **status** - See which files are changed, checked in, and uploaded.
 
@@ -71,7 +71,7 @@ Then copy the URL of the repository (not the website) from the server and use **
 For example, to get a local copy of this repository
 
     $ wib download git@github.com:chengsoonong/wib.git
-    
+
 ### References
 This package is just a wrapper on top of:
 * ```git```
