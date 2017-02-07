@@ -25,13 +25,14 @@ To learn how to use it:
 
 Summary of commands
 
-* **upload/download** - Synchronise local repository to remote repository (and vice versa)
+* **up/down** - Synchronise local repository to remote repository using **up**load
+  (and vice versa using **down**load)
 
-  ```wib upload```
+  ```wib up```
 
-  ```wib download```
+  ```wib down```
 
-  ```wib download git@github.com:myname/myrepo.git```
+  ```wib down git@github.com:myname/myrepo.git```
 
 * **track/untrack** - Keep track of this file / Forget about tracking this file.
 
@@ -66,11 +67,11 @@ Summary of commands
 We suggest to initialise a repository on a remote server, for example
 [github](https://github.com/), [bitbucket](https://bitbucket.org) or
 [gitlab](https://about.gitlab.com).
-Then copy the URL of the repository (not the website) from the server and use **download**.
+Then copy the URL of the repository (not the website) from the server and use **down**.
 
 For example, to get a local copy of this repository
 
-    $ wib download git@github.com:chengsoonong/wib.git
+    $ wib down git@github.com:chengsoonong/wib.git
 
 ### References
 This package is just a wrapper on top of:

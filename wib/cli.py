@@ -105,8 +105,8 @@ def revert(context, file_names):
 
 @main.command()
 @click.pass_context
-def upload(context):
-    """Synchronise local repo to remote repo"""
+def up(context):
+    """(upload) Synchronise local repo to remote repo"""
     context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
         context.obj.shell('git push')
@@ -115,16 +115,10 @@ def upload(context):
         context.obj.shell('hg push')
 
 @main.command()
-@click.pass_context
-def up(context):
-    """alias for upload"""
-    context.forward(upload)
-
-@main.command()
 @click.argument('repo_url', nargs=1, default='')
 @click.pass_context
-def download(context, repo_url):
-    """Synchronise remote repo to local repo.
+def down(context, repo_url):
+    """(download) Synchronise remote repo to local repo.
 
     If repo_url is given, then clone from remote URL.
     """
@@ -136,14 +130,6 @@ def download(context, repo_url):
             context.obj.shell('hg pull -u')
     else:
         context.obj.shell(context.obj.vc_name + ' clone ' + repo_url)
-
-
-@main.command()
-@click.argument('repo_url', nargs=1, default='')
-@click.pass_context
-def down(context, repo_url):
-    """alias for download"""
-    context.forward(download)
 
 @main.command()
 @click.pass_context
@@ -178,8 +164,8 @@ main.add_command(track)
 main.add_command(untrack)
 main.add_command(commit)
 main.add_command(revert)
-main.add_command(upload)
-main.add_command(download)
+main.add_command(up)
+main.add_command(down)
 main.add_command(status)
 main.add_command(log)
 main.add_command(diff)
