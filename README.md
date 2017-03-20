@@ -7,6 +7,24 @@ About the name [wib](https://en.wikipedia.org/wiki/Worse_is_better)
 
     $ pip install .
 
+## Simplified view of distributed version control
+
+There are three locations to keep in mind:
+- Local file system (no versioning, view as usual using your standard viewer)
+- Local repository (this is often the location that trips up users)
+- Remote repository (we assume this to be somewhere like github.com, which has a nice
+  interface for browsing.)
+
+The key idea behind distributed version control is that the local repository contains everything,
+and hence in theory you do not need a "server". However, for most new users, since the local
+repository is hard to view and browse, it is an opaque and confusing mess. We hope to limit
+the commands to a subset of the functionality to reduce confusion.
+
+|location| commands | location | commands | location |
+|:-------|:--------:|:-------|:-------:|:--------|
+|Local file system| commit/revert | Local repo | up/down | github.com |
+
+
 ## Commands
 
 The idea is to have a unified interface to two currently popular distributed version control
