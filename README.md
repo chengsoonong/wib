@@ -99,6 +99,6 @@ This package is just a wrapper on top of:
 * Mercurial large files extension  (TODO)
 
 The unified interface is motivated by:
-* [gitless.com](gitless.com), and paper by Santiago Perez De Rosso and Daniel Jackson, Purposes, Concepts, Misfits, and a Redesign of Git, OOPSLA, 2016
+* gitless, and paper by Santiago Perez De Rosso and Daniel Jackson, Purposes, Concepts, Misfits, and a Redesign of Git, OOPSLA, 2016
 * [repo](http://source.android.com/source/using-repo.html)
 * binary handling in [subversion]( \url{http://svnbook.red-bean.com/en/1.6/svn.forcvs.binary-and-trans.html)
