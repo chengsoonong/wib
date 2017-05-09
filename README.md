@@ -7,6 +7,10 @@ About the name [wib](https://en.wikipedia.org/wiki/Worse_is_better)
 
     $ pip install .
 
+If you already have wib installed, update by:
+
+    $ pip install --upgrade .
+
 ## Simplified view of distributed version control
 
 There are three locations to keep in mind:

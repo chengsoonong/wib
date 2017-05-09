@@ -156,8 +156,8 @@ def log(context):
         format = "'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
         context.obj.shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
     elif context.obj.vc_name == 'hg':
-        hg1 = 'hg log -G --template changeset:   {rev}:{node|short} {tags}\n'
-        hg2 = 'summary:     {desc|firstline|fill68|tabindent|tabindent}'
+        hg1 = "hg log -G --template 'changeset:   {rev}:{node|short} {tags}\n"
+        hg2 = "  summary:     {desc|firstline|fill68|tabindent|tabindent}' | less"
         context.obj.shell(hg1 + hg2)
 
 
