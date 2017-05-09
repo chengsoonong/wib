@@ -1,6 +1,6 @@
 import subprocess
-import sys
 import click
+
 
 class Repo(object):
     def __init__(self, debug, vc_name='git'):
@@ -39,8 +39,9 @@ class Repo(object):
 def main(context, debug):
     context.obj = Repo(debug)
 
+
 @main.command()
-@click.argument('file_names', nargs=-1)
+@click.argument('file_names', nargs=-1, type=click.Path())
 @click.pass_context
 def track(context, file_names):
     """Keep track of each file in list file_names."""
@@ -48,8 +49,9 @@ def track(context, file_names):
     for fn in file_names:
         context.obj.shell(context.obj.vc_name + ' add ' + fn)
 
+
 @main.command()
-@click.argument('file_names', nargs=-1)
+@click.argument('file_names', nargs=-1, type=click.Path())
 @click.pass_context
 def untrack(context, file_names):
     """Forget about tracking each file in the list file_names"""
@@ -59,6 +61,7 @@ def untrack(context, file_names):
             context.obj.shell('git rm --cached ' + fn)
         elif context.obj.vc_name == 'hg':
             context.obj.shell('hg forget ' + fn)
+
 
 @main.command()
 @click.argument('message')
@@ -79,6 +82,7 @@ def commit(context, message, name):
     elif name != '' and context.obj.vc_name == 'hg':
         context.obj.shell('hg tag -m "' + message + '" ' + name)
 
+
 @main.command()
 @click.argument('message')
 @click.option('--name', default='')
@@ -87,8 +91,9 @@ def ci(context, message, name):
     """alias for commit"""
     context.forward(commit)
 
+
 @main.command()
-@click.argument('file_names', nargs=-1)
+@click.argument('file_names', nargs=-1, type=click.Path())
 @click.pass_context
 def revert(context, file_names):
     """Revert each file in the list file_names back to version in repo"""
@@ -103,6 +108,7 @@ def revert(context, file_names):
         elif context.obj.vc_name == 'hg':
             context.obj.shell('hg revert --no-backup ' + fn)
 
+
 @main.command()
 @click.pass_context
 def up(context):
@@ -113,6 +119,7 @@ def up(context):
         context.obj.shell('git push --tags')
     elif context.obj.vc_name == 'hg':
         context.obj.shell('hg push')
+
 
 @main.command()
 @click.argument('repo_url', nargs=1, default='')
@@ -131,12 +138,14 @@ def down(context, repo_url):
     else:
         context.obj.shell(context.obj.vc_name + ' clone ' + repo_url)
 
+
 @main.command()
 @click.pass_context
 def status(context):
     """See which files have changed, checked in, and uploaded"""
     context.obj.find_repo_type()
     context.obj.shell(context.obj.vc_name + ' status')
+
 
 @main.command()
 @click.pass_context
@@ -147,7 +156,10 @@ def log(context):
         format = "'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
         context.obj.shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
     elif context.obj.vc_name == 'hg':
-        context.obj.shell('hg log -G --template changeset:   {rev}:{node|short} {tags}\nsummary:     {desc|firstline|fill68|tabindent|tabindent}')
+        hg1 = 'hg log -G --template changeset:   {rev}:{node|short} {tags}\n'
+        hg2 = 'summary:     {desc|firstline|fill68|tabindent|tabindent}'
+        context.obj.shell(hg1 + hg2)
+
 
 @main.command()
 @click.argument('file_name', default='')
@@ -159,6 +171,7 @@ def diff(context, file_name):
         context.obj.shell('git diff --color-words --ignore-space-change ' + file_name)
     elif context.obj.vc_name == 'hg':
         context.obj.shell('hg diff ' + file_name)
+
 
 main.add_command(track)
 main.add_command(untrack)

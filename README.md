@@ -1,5 +1,5 @@
 # wib
-A common interface to both ```git``` and ```hg```.
+A simplified common interface to both ```git``` and ```hg```.
 
 About the name [wib](https://en.wikipedia.org/wiki/Worse_is_better)
 
@@ -102,3 +102,9 @@ The unified interface is motivated by:
 * gitless, and paper by Santiago Perez De Rosso and Daniel Jackson, Purposes, Concepts, Misfits, and a Redesign of Git, OOPSLA, 2016
 * [repo](http://source.android.com/source/using-repo.html)
 * binary handling in [subversion]( \url{http://svnbook.red-bean.com/en/1.6/svn.forcvs.binary-and-trans.html)
+
+
+### FAQ
+
+- When you have a file with spaces in the name, use quotes and escape the spaces. E.g.
+  ```wib track "test\ file\ with\ space.txt"```

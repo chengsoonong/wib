@@ -12,7 +12,7 @@ setup(
     license='BSD',
     author='Cheng Soon Ong',
     author_email='chengsoon.ong@anu.edu.au',
-    description='Common interface to git and hg',
+    description='Simplified common interface to git and hg',
     long_description=__doc__,
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
