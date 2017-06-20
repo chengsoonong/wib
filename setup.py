@@ -2,18 +2,23 @@
 Common interfacte to git and hg
 """
 from setuptools import find_packages, setup
+import os
+short_description = 'Simplified common interface to git and hg'
+long_description = short_description
+if os.path.exists('README.txt'):
+    long_description = open('README.txt').read()
 
 dependencies = ['click']
 
 setup(
     name='wib',
-    version='0.2.2',
+    version='0.2.3',
     url='https://github.com/chengsoonong/wib',
     license='BSD',
     author='Cheng Soon Ong',
     author_email='chengsoon.ong@anu.edu.au',
-    description='Simplified common interface to git and hg',
-    long_description=__doc__,
+    description=short_description,
+    long_description=long_description,
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
     zip_safe=False,

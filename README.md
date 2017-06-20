@@ -5,11 +5,11 @@ About the name [wib](https://en.wikipedia.org/wiki/Worse_is_better)
 
 ## Installation
 
-    $ pip install .
+    $ pip install wib
 
 If you already have wib installed, update by:
 
-    $ pip install --upgrade .
+    $ pip install --upgrade wib
 
 ## Simplified view of distributed version control
 
