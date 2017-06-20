@@ -86,15 +86,14 @@ def commit(context, message, name):
     name    - tag name
     """
     context.obj.find_repo_type()
-    quoted_message = '"{}"'.format(message)
     if context.obj.vc_name == 'git':
-        context.obj.call(['git', 'commit', '-a', '-m', quoted_message])
+        context.obj.call(['git', 'commit', '-a', '-m', message])
     elif context.obj.vc_name == 'hg':
-        context.obj.call(['hg', 'commit', '-m', quoted_message])
+        context.obj.call(['hg', 'commit', '-m', message])
     if name != '' and context.obj.vc_name == 'git':
-        context.obj.call(['git', 'tag', '-a', name, '-m', quoted_message])
+        context.obj.call(['git', 'tag', '-a', name, '-m', message])
     elif name != '' and context.obj.vc_name == 'hg':
-        context.obj.call(['hg', 'tag', '-m', quoted_message, name])
+        context.obj.call(['hg', 'tag', '-m', message, name])
 
 
 @main.command()
