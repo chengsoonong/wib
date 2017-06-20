@@ -104,7 +104,7 @@ For example, to get a local copy of this repository
 
 ### Developer notes
 
-Need to set up ```~/.pypirc```
+Need to set up ```~/.pypirc```, see for example [this blog post](http://blog.irashid.com/how-to-register-you-python-package-in-pypi/).
 
 Upload and release:
 
