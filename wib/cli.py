@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import os
 import click
@@ -9,27 +10,33 @@ class Repo(object):
         self.vc_name = vc_name
         self.FNULL = open(os.devnull, 'w')
 
-    def shell(self, command, devnull=False):
+    def call(self, args, devnull=False):
+        """Call other processes.
+        args - list of command args
+        devnull - whether to pipe stdout to /dev/null (or equivalent)
+        """
         if self.debug:
-            click.echo(command)
+            click.echo(subprocess.list2cmdline(args))
             click.confirm('Continue?', default=True, abort=True)
         try:
+            kwargs = {}
             if devnull:
-                ret_code = subprocess.call(command, stdout=self.FNULL, stderr=subprocess.STDOUT,
-                                           shell=True)
-            else:
-                ret_code = subprocess.call(command, shell=True)
+                # Pipe to /dev/null (or equivalent).
+                kwargs['stderr'] = subprocess.STDOUT
+                kwargs['stdout'] = self.FNULL
+            ret_code = subprocess.call(args, **kwargs)
         except subprocess.CalledProcessError:
             return False
         return ret_code
 
     def find_repo_type(self):
         """Check for git or hg repository"""
-        is_git = self.shell('git rev-parse --is-inside-work-tree', devnull=True)
+        is_git = self.call(['git', 'rev-parse', '--is-inside-work-tree'],
+                           devnull=True)
         if is_git != 0:
             if self.debug:
                 click.echo('not git')
-            is_hg = self.shell('hg -q stat', devnull=True)
+            is_hg = self.call(['hg', '-q', 'stat'], devnull=True)
             if is_hg != 0:
                 if self.debug:
                     click.echo('not hg')
@@ -53,7 +60,7 @@ def track(context, file_names):
     """Keep track of each file in list file_names."""
     context.obj.find_repo_type()
     for fn in file_names:
-        context.obj.shell(context.obj.vc_name + ' add ' + fn)
+        context.obj.call([context.obj.vc_name, 'add', fn])
 
 
 @main.command()
@@ -64,9 +71,9 @@ def untrack(context, file_names):
     context.obj.find_repo_type()
     for fn in file_names:
         if context.obj.vc_name == 'git':
-            context.obj.shell('git rm --cached ' + fn)
+            context.obj.call(['git', 'rm', '--cached ', fn])
         elif context.obj.vc_name == 'hg':
-            context.obj.shell('hg forget ' + fn)
+            context.obj.call(['hg', 'forget', fn])
 
 
 @main.command()
@@ -79,14 +86,15 @@ def commit(context, message, name):
     name    - tag name
     """
     context.obj.find_repo_type()
+    quoted_message = '"{}"'.format(message)
     if context.obj.vc_name == 'git':
-        context.obj.shell('git commit -a -m "' + message + '"')
+        context.obj.call(['git', 'commit', '-a', '-m', quoted_message])
     elif context.obj.vc_name == 'hg':
-        context.obj.shell('hg commit -m "' + message + '"')
+        context.obj.call(['hg', 'commit', '-m', quoted_message])
     if name != '' and context.obj.vc_name == 'git':
-        context.obj.shell('git tag -a ' + name + ' -m "' + message + '"')
+        context.obj.call(['git', 'tag', '-a', name, '-m', quoted_message])
     elif name != '' and context.obj.vc_name == 'hg':
-        context.obj.shell('hg tag -m "' + message + '" ' + name)
+        context.obj.call(['hg', 'tag', '-m', quoted_message, name])
 
 
 @main.command()
@@ -110,9 +118,9 @@ def revert(context, file_names):
         context.invoke(status)
     for fn in file_names:
         if context.obj.vc_name == 'git':
-            context.obj.shell('git checkout -- ' + fn)
+            context.obj.call(['git', 'checkout', '--', fn])
         elif context.obj.vc_name == 'hg':
-            context.obj.shell('hg revert --no-backup ' + fn)
+            context.obj.call(['hg', 'revert', '--no-backup', fn])
 
 
 @main.command()
@@ -121,10 +129,10 @@ def up(context):
     """(upload) Synchronise local repo to remote repo"""
     context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
-        context.obj.shell('git push')
-        context.obj.shell('git push --tags')
+        context.obj.call(['git', 'push'])
+        context.obj.call(['git', 'push', '--tags'])
     elif context.obj.vc_name == 'hg':
-        context.obj.shell('hg push')
+        context.obj.call(['hg', 'push'])
 
 
 @main.command()
@@ -138,11 +146,11 @@ def down(context, repo_url):
     if repo_url == '':
         context.obj.find_repo_type()
         if context.obj.vc_name == 'git':
-            context.obj.shell('git pull')
+            context.obj.call(['git', 'pull'])
         elif context.obj.vc_name == 'hg':
-            context.obj.shell('hg pull -u')
+            context.obj.call(['hg', 'pull', '-u'])
     else:
-        context.obj.shell(context.obj.vc_name + ' clone ' + repo_url)
+        context.obj.call([context.obj.vc_name, 'clone', repo_url])
 
 
 @main.command()
@@ -150,7 +158,7 @@ def down(context, repo_url):
 def status(context):
     """See which files have changed, checked in, and uploaded"""
     context.obj.find_repo_type()
-    context.obj.shell(context.obj.vc_name + ' status')
+    context.obj.call([context.obj.vc_name, 'status'])
 
 
 @main.command()
@@ -159,12 +167,15 @@ def log(context):
     """See history"""
     context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
-        format = "'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'"
-        context.obj.shell('git log --graph --pretty=format:' + format + ' --abbrev-commit --stat')
+        format = ("--pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset "
+                  "%s %Cgreen(%cr) %C(bold blue)<%an>%Creset'")
+        context.obj.call(['git', 'log', '--graph', format,
+                          '--abbrev-commit', '--stat'])
     elif context.obj.vc_name == 'hg':
-        hg1 = "hg log -G --template 'changeset:   {rev}:{node|short} {tags}\n"
-        hg2 = "  summary:     {desc|firstline|fill68|tabindent|tabindent}' | less"
-        context.obj.shell(hg1 + hg2)
+        template = (
+            '"changeset:   {rev}:{node|short} {tags}\n'
+            ' summary:     {desc|firstline|fill68|tabindent|tabindent}"')
+        context.obj.call(['hg', 'log', '-G', '--template', template])
 
 
 @main.command()
@@ -174,9 +185,10 @@ def diff(context, file_name):
     """See changes that occured since last check in"""
     context.obj.find_repo_type()
     if context.obj.vc_name == 'git':
-        context.obj.shell('git diff --color-words --ignore-space-change ' + file_name)
+        context.obj.call(['git', 'diff', '--color-words',
+                          '--ignore-space-change', file_name])
     elif context.obj.vc_name == 'hg':
-        context.obj.shell('hg diff ' + file_name)
+        context.obj.call(['hg', 'diff', file_name])
 
 
 main.add_command(track)
