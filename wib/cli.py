@@ -1,4 +1,5 @@
 import subprocess
+import os
 import click
 
 
@@ -6,24 +7,29 @@ class Repo(object):
     def __init__(self, debug, vc_name='git'):
         self.debug = debug
         self.vc_name = vc_name
+        self.FNULL = open(os.devnull, 'w')
 
-    def shell(self, command):
+    def shell(self, command, devnull=False):
         if self.debug:
             click.echo(command)
             click.confirm('Continue?', default=True, abort=True)
         try:
-            ret_code = subprocess.call(command, shell=True)
+            if devnull:
+                ret_code = subprocess.call(command, stdout=self.FNULL, stderr=subprocess.STDOUT,
+                                           shell=True)
+            else:
+                ret_code = subprocess.call(command, shell=True)
         except subprocess.CalledProcessError:
             return False
         return ret_code
 
     def find_repo_type(self):
         """Check for git or hg repository"""
-        is_git = self.shell('git rev-parse --is-inside-work-tree &> /dev/null')
+        is_git = self.shell('git rev-parse --is-inside-work-tree', devnull=True)
         if is_git != 0:
             if self.debug:
                 click.echo('not git')
-            is_hg = self.shell('hg -q stat &> /dev/null')
+            is_hg = self.shell('hg -q stat', devnull=True)
             if is_hg != 0:
                 if self.debug:
                     click.echo('not hg')

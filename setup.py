@@ -15,7 +15,7 @@ except:
 
 setup(
     name='wib',
-    version='0.2.5',
+    version='0.2.6',
     url='https://github.com/chengsoonong/wib',
     license='BSD',
     author='Cheng Soon Ong',
