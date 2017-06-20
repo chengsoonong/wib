@@ -53,40 +53,36 @@ To learn how to use it:
 
 Summary of commands
 
-- **up/down** - Synchronise local repository to remote repository using **up**load
+**up/down** - Synchronise local repository to remote repository using **up**load
   (and vice versa using **down**load)
 
     $ wib up
-
     $ wib down
-
     $ wib down git@github.com:myname/myrepo.git
 
-- **track/untrack** - Keep track of this file / Forget about tracking this file.
+**track/untrack** - Keep track of this file / Forget about tracking this file.
 
     $ wib track myfile
-
     $ wib untrack myfile
 
-- **commit** - Commit saved changes to the repository. Use ```--name``` to tag.
+**commit** - Commit saved changes to the repository. Use ```--name``` to tag.
 
     $ wib commit "why I am saving this version"
-
     $ wib commit --name v0.3 "a release with cool new features"
 
-- **revert** - Revert changed files back to the version in the repository
+**revert** - Revert changed files back to the version in the repository
 
     $ wib revert myfile
 
-- **status** - See which files are changed, checked in, and uploaded.
+**status** - See which files are changed, checked in, and uploaded.
 
     $ wib status
 
-- **log** - See history
+**log** - See history
 
     $ wib log
 
-- **diff** - See changes that occurred since last check in.
+**diff** - See changes that occurred since last check in.
 
     $ wib diff myfile
 
@@ -108,16 +104,14 @@ Need to set up ```~/.pypirc```, see for example [this blog post](http://blog.ira
 
 Upload and release:
 
-- PyPI TEST
+PyPI TEST
 
     $ python setup.py register -r pypitest
-
     $ python setup.py sdist upload -r pypitest
 
-- PyPI LIVE
+PyPI LIVE
 
     $ python setup.py register -r pypi
-
     $ python setup.py sdist upload -r pypi
 
 
