@@ -2,7 +2,6 @@
 Common interfacte to git and hg
 """
 from setuptools import find_packages, setup
-from os import path
 
 dependencies = ['click']
 
@@ -10,9 +9,8 @@ short_description = 'Simplified common interface to git and hg'
 # Hack to convert Markdown to ReStructuredText
 try:
     import pypandoc
-    here = path.abspath(path.dirname(__file__))
-    long_description = pypandoc.convert(path.join(here, 'README.md'), 'rst')
-except (IOError, ImportError):
+    long_description = pypandoc.convert('README.md', 'rst')
+except:
     long_description = short_description
 
 setup(
