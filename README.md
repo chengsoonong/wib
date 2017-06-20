@@ -101,6 +101,26 @@ For example, to get a local copy of this repository
 
     $ wib down git@github.com:chengsoonong/wib.git
 
+
+### Developer notes
+
+Need to set up ```~/.pypirc```
+
+Upload and release:
+
+- PyPI TEST
+
+    $ python setup.py register -r pypitest
+
+    $ python setup.py sdist upload -r pypitest
+
+- PyPI LIVE
+
+    $ python setup.py register -r pypi
+
+    $ python setup.py sdist upload -r pypi
+
+
 ### References
 This package is just a wrapper on top of:
 
