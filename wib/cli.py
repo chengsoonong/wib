@@ -1,4 +1,3 @@
-import shutil
 import subprocess
 import os
 import click
@@ -71,7 +70,7 @@ def untrack(context, file_names):
     context.obj.find_repo_type()
     for fn in file_names:
         if context.obj.vc_name == 'git':
-            context.obj.call(['git', 'rm', '--cached ', fn])
+            context.obj.call(['git', 'rm', '--cached', fn])
         elif context.obj.vc_name == 'hg':
             context.obj.call(['hg', 'forget', fn])
 
