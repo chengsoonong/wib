@@ -44,9 +44,6 @@ If you have made a mistake you can ```revert``` back to the previous committed v
 
 ## Commands
 
-Longer term, automated (and transparent) detection and handling of binary files
-will simplify the user experience.
-
 To learn how to use it:
 
     $ wib --help
@@ -60,7 +57,7 @@ Summary of commands
     $ wib down
     $ wib down git@github.com:myname/myrepo.git
 
-**track/untrack** - Keep track of this file / Forget about tracking this file.
+**track/untrack** - Keep track of this file / Forget about tracking this file. Tracking does not create or delete the actual file, it only tells the version control system whether to maintain versions (to keep track) of the file.
 
     $ wib track myfile
     $ wib untrack myfile
@@ -123,14 +120,11 @@ This package is just a wrapper on top of:
 - ```git lfs```  (TODO)
 - Mercurial large files extension  (TODO)
 
+Longer term, automated (and transparent) detection and handling of binary files
+will simplify the user experience.
+
 The unified interface is motivated by:
 
 - gitless, and paper by Santiago Perez De Rosso and Daniel Jackson, Purposes, Concepts, Misfits, and a Redesign of Git, OOPSLA, 2016
 - [repo](http://source.android.com/source/using-repo.html)
 - binary handling in [subversion](http://svnbook.red-bean.com/en/1.6/svn.forcvs.binary-and-trans.html)
-
-
-### FAQ
-
-- When you have a file with spaces in the name, use quotes **and** escape the spaces. E.g.
-  ```wib track "test\ file\ with\ space.txt"```

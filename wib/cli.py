@@ -56,7 +56,12 @@ def main(context, debug):
 @click.argument('file_names', nargs=-1, type=click.Path())
 @click.pass_context
 def track(context, file_names):
-    """Keep track of each file in list file_names."""
+    """Keep track of each file in list file_names.
+
+    Tracking does not create or delete the actual file, it only tells the
+    version control system whether to maintain versions (to keep track) of
+    the file.
+    """
     context.obj.find_repo_type()
     for fn in file_names:
         context.obj.call([context.obj.vc_name, 'add', fn])
@@ -66,7 +71,12 @@ def track(context, file_names):
 @click.argument('file_names', nargs=-1, type=click.Path())
 @click.pass_context
 def untrack(context, file_names):
-    """Forget about tracking each file in the list file_names"""
+    """Forget about tracking each file in the list file_names
+
+    Tracking does not create or delete the actual file, it only tells the
+    version control system whether to maintain versions (to keep track) of
+    the file.
+    """
     context.obj.find_repo_type()
     for fn in file_names:
         if context.obj.vc_name == 'git':
