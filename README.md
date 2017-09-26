@@ -103,12 +103,10 @@ Upload and release:
 
 PyPI TEST
 
-    $ python setup.py register -r testpypi
     $ python setup.py sdist upload -r testpypi
 
 PyPI LIVE
 
-    $ python setup.py register -r pypi
     $ python setup.py sdist upload -r pypi
 
 
