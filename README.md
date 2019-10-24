@@ -97,17 +97,41 @@ For example, to get a local copy of this repository
 
 ### Developer notes
 
+Instructions to upload to Pypi from [the official docs](https://packaging.python.org/tutorials/packaging-projects/).
+
+##### Build
+Make sure you have the latest versions of setuptools and wheel installed:
+```
+$ conda update setuptools wheel
+```
+Now run this command from the same directory where setup.py is located:
+```
+$ python setup.py sdist bdist_wheel
+```
+This command should output a lot of text and once completed should generate two files in the dist directory:
+```
+dist/
+    wib-0.2.10-py2.py3-none-any.whl
+    wib-0.2.10.tar.gz
+```
+##### Upload and release:
+
 Need to set up ```~/.pypirc```, see for example [this blog post](http://blog.irashid.com/how-to-register-you-python-package-in-pypi/).
 
-Upload and release:
+Upload using [twine](https://packaging.python.org/key_projects/#twine).
 
-PyPI TEST
+**PyPI TEST**
 
-    $ python setup.py sdist upload -r testpypi
+    $ python -m twine upload -r testpypi dist/*
 
-PyPI LIVE
+Check that it works by installing:
 
-    $ python setup.py sdist upload -r pypi
+    $ python -m pip install --index-url https://test.pypi.org/simple --no-deps wib
+
+**PyPI LIVE**
+
+    $ python -m twine upload dist/*
+
 
 
 ### References
